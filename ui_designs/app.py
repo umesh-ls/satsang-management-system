@@ -3,7 +3,7 @@ import streamlit.components.v1 as components
 from PIL import Image
 import io
 import os
-from datetime import datetime, date
+from datetime import datetime, date, time
 import pandas as pd
 
 # Set page config
@@ -124,6 +124,21 @@ st.markdown("""
         border-radius: 8px;
         margin: 1rem 0;
     }
+    
+    .container-border {
+        border: 1px solid #e6e6e6;
+        border-radius: 5px;
+        padding: 20px;
+        margin: 10px 0;
+        background-color: white;
+    }
+    
+    .section-header {
+        font-size: 1.1em;
+        font-weight: 500;
+        margin-bottom: 15px;
+        color: #333;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -200,16 +215,26 @@ def create_data_entry():
         col1, col2 = st.columns(2)
         
         with col1:
-            satsang_date = st.date_input("Day & Date", max_value=date.today(), key="main_date")
-            day_of_week = satsang_date.strftime("%A")
+            # Date and Day Selection
+            satsang_date = st.date_input("Date", max_value=date.today(), key="main_date")
+            day = st.selectbox("Day", ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], key="main_day")
             
+            # Start Time Selection with Label
+            st.markdown("##### Start Time")
             time_col1, time_col2 = st.columns(2)
             with time_col1:
                 hour = st.selectbox("Hour", range(24), format_func=lambda x: f"{x:02d}", key="main_hour")
             with time_col2:
                 minute = st.selectbox("Minute", [0, 15, 30, 45], format_func=lambda x: f"{x:02d}", key="main_minute")
             
-            duration = st.number_input("Duration (hours)", min_value=0.5, max_value=4.0, step=0.5, key="main_duration")
+            # Duration Selection with Hours and Minutes
+            st.markdown("##### Duration")
+            duration_col1, duration_col2 = st.columns(2)
+            with duration_col1:
+                duration_hours = st.number_input("Hours", min_value=0, max_value=10, value=1, key="main_duration_hours")
+            with duration_col2:
+                duration_minutes = st.number_input("Minutes", min_value=0, max_value=59, value=30, key="main_duration_minutes")
+            
             language = st.selectbox("Language", ["English", "Hindi", "Punjabi"], key="main_lang")
             preacher_type = st.selectbox("Preacher Type", ["Satsang Karta (SK)", "Satsang Reader (SR)", "Cassette"], key="main_preacher_type")
             
@@ -229,7 +254,7 @@ def create_data_entry():
             gents = st.number_input("Gents", min_value=0, key="main_gents")
             ladies = st.number_input("Ladies", min_value=0, key="main_ladies")
             children = st.number_input("Children", min_value=0, key="main_children")
-    
+        
     with tab2:
         # Baal Satsang Form
         col1, col2 = st.columns(2)
